@@ -5,8 +5,9 @@ import itertools
 import contextlib
 import pathlib
 import re
+import sys
 
-from .py310compat import text_encoding
+from .compat.py310 import text_encoding
 from .glob import Translator
 
 
@@ -179,8 +180,10 @@ class FastLookup(CompleteDirs):
 
 
 def _extract_text_encoding(encoding=None, *args, **kwargs):
-    # stacklevel=3 so that the caller of the caller see any warning.
-    return text_encoding(encoding, 3), args, kwargs
+    # compute stack level so that the caller of the caller sees any warning.
+    is_pypy = sys.implementation.name == 'pypy'
+    stack_level = 3 + is_pypy
+    return text_encoding(encoding, stack_level), args, kwargs
 
 
 class Path:
@@ -399,7 +402,8 @@ class Path:
         prefix = re.escape(self.at)
         tr = Translator(seps='/')
         matches = re.compile(prefix + tr.translate(pattern)).fullmatch
-        return map(self._next, filter(matches, self.root.namelist()))
+        names = (data.filename for data in self.root.filelist)
+        return map(self._next, filter(matches, names))
 
     def rglob(self, pattern):
         return self.glob(f'**/{pattern}')
