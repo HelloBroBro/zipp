@@ -1,3 +1,9 @@
+v3.18.1
+=======
+
+No significant changes.
+
+
 v3.18.0
 =======
 
@@ -6,6 +12,12 @@ Features
 
 - Bypass ZipFile.namelist in glob for better performance. (#106)
 - Refactored glob functionality to support a more generalized solution with support for platform-specific path separators. (#108)
+
+
+Bugfixes
+--------
+
+- Add special accounting for pypy when computing the stack level for text encoding warnings. (#114)
 
 
 v3.17.0
