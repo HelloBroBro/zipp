@@ -6,7 +6,7 @@ import pickle
 import stat
 import sys
 import unittest
-from .compat.overlay import zipfile
+from zipp.compat.overlay import zipfile
 
 from .compat.py39.os_helper import temp_dir, FakePath
 
@@ -468,6 +468,18 @@ class TestPath(unittest.TestCase):
         assert all(each.match("*.txt") for each in files)
 
         assert list(root.glob("**/*.txt")) == list(root.rglob("*.txt"))
+
+    @pass_alpharep
+    def test_glob_dirs(self, alpharep):
+        root = zipfile.Path(alpharep)
+        assert list(root.glob('b')) == [zipfile.Path(alpharep, "b/")]
+        assert list(root.glob('b*')) == [zipfile.Path(alpharep, "b/")]
+
+    @pass_alpharep
+    def test_glob_subdir(self, alpharep):
+        root = zipfile.Path(alpharep)
+        assert list(root.glob('g/h')) == [zipfile.Path(alpharep, "g/h/")]
+        assert list(root.glob('g*/h*')) == [zipfile.Path(alpharep, "g/h/")]
 
     @pass_alpharep
     def test_glob_subdirs(self, alpharep):
